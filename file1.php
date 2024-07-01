@@ -1,3 +1,5 @@
 <?php
 
-phpinfo();
+if (!empty($_GET['info'])) {
+    phpinfo();
+}
