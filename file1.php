@@ -1,5 +1,3 @@
 <?php
 
-if (!empty($_GET['info'])) {
-    phpinfo();
-}
+require_once __DIR__ . '/someDir/file.php';
