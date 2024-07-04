@@ -1,0 +1,31 @@
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  database_volume:
+    driver: local
+
+services:
+  app:
+    build:
+      context: .docker/php
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - app_network
+  database:
+    image: 'mysql:8'
+    restart: always
+    ports:
+      - "33061:3306"
+    volumes:
+      - "database_volume:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: php_07_advanced
+    networks:
+      - app_network
