@@ -11,6 +11,8 @@ services:
     build:
       context: .docker/php
     restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "80:80"
     volumes:

@@ -1,0 +1,12 @@
+{
+    "name": "root/html",
+    "autoload": {
+        "psr-4": {
+            "Classes\\": "Classes/",
+            "Config\\": "Config/"
+        }
+    },
+    "require-dev": {
+        "larapack/dd": "1.*"
+    }
+}
