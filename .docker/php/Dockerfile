@@ -11,3 +11,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY ./xdebug.ini "${PHP_INI_DIR}/conf.d"
 
 WORKDIR /var/www
+
+RUN /usr/sbin/a2enmod rewrite
+
+COPY default.conf /etc/apache2/sites-available/000-default.conf
