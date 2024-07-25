@@ -2,11 +2,15 @@
     "name": "root/html",
     "autoload": {
         "psr-4": {
-            "Classes\\": "Classes/",
-            "Config\\": "Config/"
-        }
+            "App\\": "App/",
+            "Core\\": "Core/"
+        },
+        "files": [
+            "routes/api.php"
+        ]
     },
     "require-dev": {
-        "larapack/dd": "1.*"
+        "larapack/dd": "1.*",
+        "ext-pdo": "*"
     }
 }
