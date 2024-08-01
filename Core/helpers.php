@@ -14,3 +14,8 @@ function jsonResponse(Status $status, array $data = []): string
        'data' => $data
     ]);
 }
+
+function db(): PDO
+{
+    return \Core\DB::connect();
+}
