@@ -7,7 +7,7 @@ use Cli;
 use Exception;
 use PDOException;
 
-class Run implements Command
+class Down implements Command
 {
     const MIGRATIONS_DIR = BASE_DIR . '/migrations';
 
@@ -19,13 +19,10 @@ class Run implements Command
     {
         try {
             db()->beginTransaction();
-            $this->cli->info("Migration process has been start...");
-            // check and create 'migrations' table
-            $this->createMigrationsTable();
-            $this->runMigrations();
-            // run migrations
+            $this->cli->info("Rollback migration process has been start...");
+            $this->downMigrations();
             db()->commit();
-            $this->cli->success("Migration process has been done!");
+            $this->cli->success("Rollback migration process has been done!");
         } catch (PDOException $exception) {
             if (db()->inTransaction()) {
                 db()->rollBack();
@@ -36,25 +33,17 @@ class Run implements Command
         }
     }
 
-    protected function runMigrations(): void
+    protected function downMigrations(): void
     {
         $this->cli->info("");
-        $this->cli->info("Fetch migrations..");
+        $this->cli->info("Down migrations..");
 
-        $migrations = scandir(static::MIGRATIONS_DIR);
-        $migrations = array_values(array_diff(
-            $migrations,
-            ['.', '..']
-        ));
-        $migrations = array_values(array_diff(
-            $migrations,
-            $this->retrieveHandledMigrations()
-        )); ;
+        $migrations = $this->retrieveHandledMigrations();
 
         if (!empty($migrations)) {
             foreach ($migrations as $migration) {
                 $name = preg_replace('/[\d]+_/', '', $migration);
-                $this->cli->notice("- run $name");
+                $this->cli->notice("- rollback $name migration");
 
                 $script = $this->getScript($migration);
 
@@ -66,8 +55,8 @@ class Run implements Command
                 $query = db()->prepare($script);
 
                 if ($query->execute()) {
-                    $this->createMigrationRecord($migration);
-                    $this->cli->success("- $name migrated!");
+                    $this->removeMigrationRecord($migration);
+                    $this->cli->success("- $name rollback done!");
                 }
             }
         } else {
@@ -75,9 +64,9 @@ class Run implements Command
         }
     }
 
-    protected function createMigrationRecord(string $migration): void
+    protected function removeMigrationRecord(string $migration): void
     {
-        $query = db()->prepare("INSERT INTO migrations (name) VALUES (:name)");
+        $query = db()->prepare("DELETE FROM migrations WHERE name = :name");
         $query->bindParam('name', $migration);
         $query->execute();
     }
@@ -86,31 +75,14 @@ class Run implements Command
     {
         $obj = null;
         $obj = require static::MIGRATIONS_DIR . '/' . $migrationPath;
-        return $obj?->up() ?? '';
+        return $obj?->down() ?? '';
     }
 
     protected function retrieveHandledMigrations(): array
     {
-        $query = db()->prepare("SELECT name FROM migrations");
+        $query = db()->prepare("SELECT name FROM migrations ORDER BY id DESC");
         $query->execute();
 
         return array_map(fn ($item) => $item['name'], $query->fetchAll());
-    }
-
-    protected function createMigrationsTable(): void
-    {
-        $this->cli->info("- Run migration table query");
-        $query = db()->prepare("
-            CREATE TABLE IF NOT EXISTS migrations (
-                id INT (8) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-                name VARCHAR(255) NOT NULL UNIQUE
-            )
-        ");
-
-        if (!$query->execute()) {
-            throw new Exception("Smth went wrong with 'migrations' table query");
-        }
-
-        $this->cli->success('Migration table was checked/created');
     }
 }
