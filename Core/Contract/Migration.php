@@ -7,7 +7,7 @@ interface Migration
     const TEMPLATE = <<<EOL
 <?php
 
-new class implements \Core\Contract\Migration
+return new class implements \Core\Contract\Migration
 {
     /**
     * Run migration script 

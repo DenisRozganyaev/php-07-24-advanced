@@ -18,6 +18,11 @@ return [
             'description' => 'Run all migrations',
             'arguments' => []
         ],
+        [
+            'command' => 'migration:down',
+            'description' => 'Rollback all migrations',
+            'arguments' => []
+        ],
 //        [
 //            'command' => 'seed:users',
 //            'description' => 'Generate fake data for users table',
@@ -33,5 +38,6 @@ return [
     'commands' => [
         'migration:create' => App\Commands\Migrations\Create::class,
         'migration:run' => App\Commands\Migrations\Run::class,
+        'migration:down' => App\Commands\Migrations\Down::class,
     ]
 ];
