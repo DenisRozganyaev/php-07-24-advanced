@@ -9,7 +9,7 @@ use PDOException;
 
 class Run implements Command
 {
-    const MIGRATIONS_DIR = BASE_DIR . '/migrations';
+    const MIGRATIONS_DIR = BASE_DIR . '/database/migrations';
 
     public function __construct(public Cli $cli, public array $args = [])
     {
