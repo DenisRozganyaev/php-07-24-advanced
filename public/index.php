@@ -12,13 +12,8 @@ try {
     $dotenv = Dotenv::createUnsafeImmutable(BASE_DIR);
     $dotenv->load();
 
-    dd(\App\Models\User::create([
-        'email' => 'test@mail.com',
-        'password' => 'test1234'
-    ]));
-
-//    require_once BASE_DIR . '/routes/api.php';
-//    die(Router::dispatch($_SERVER['REQUEST_URI']));
+    require_once BASE_DIR . '/routes/api.php';
+    die(Router::dispatch($_SERVER['REQUEST_URI']));
 } catch (PDOException $exception) {
     die(
         jsonResponse(
@@ -35,7 +30,7 @@ try {
 } catch (Throwable $exception) {
     die(
         jsonResponse(
-            Status::from($exception->getCode()),
+            $exception->getCode() === 0 ? Status::UNPROCESSABLE_ENTITY : Status::from($exception->getCode()),
             [
                 'errors' => [
                     'message' => $exception->getMessage(),
